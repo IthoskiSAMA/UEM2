@@ -1,0 +1,35 @@
+{% extends 'sctr_base.html' %}
+{% load static %}
+
+
+{% block title %}Reportes por docentes{% endblock title %}
+
+
+{% block content %}
+<section class="col-12" id="seccion-info-general">
+    <h1>Generar Reporte de Docentes</h1>
+    <form  method="POST">
+        {% csrf_token %}
+        <label for="filtro-sexo">Filtrar por Sexo:</label>
+        <select name="filtro-sexo" id="filtro-sexo">
+            <option value="">Todos</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+        </select>
+
+        <label for="filtro-provincia">Filtrar por Provincia:</label>
+        <select name="filtro-provincia" id="filtro-provincia">
+            <option value="">Todas</option>
+           
+        </select>
+
+        <input type="submit" value="Generar Reporte">
+    </form>
+    
+</section>
+{% endblock content %}
+
+
+{% block js %}
+<script src=""></script>
+{% endblock js %}

@@ -1,0 +1,634 @@
+{% extends 'sctr_base.html' %} {% load static %} {% block title %}Reportes por
+estudiante{% endblock title %} {% block content %}
+<div class="pagetitle">
+  <h1>Reportes por estudiante</h1>
+</div>
+
+<section class="section">
+  <!--Gráficas de estudiantes-->
+  <div class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Cantidad de estudiantes</h5>
+            <select
+              class="form-select w-auto"
+              name="select_id_year"
+              id="select_id_year"
+            >
+              {% for periodo in available_year %}
+              <option value="{{periodo}}">
+                {{ periodo }} - {{periodo|add:1}}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div id="grafico-container">
+            <canvas id="grafico"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Condiciones según su estado</h5>
+            <select
+              class="form-select w-auto"
+              name="select_id_year_estado"
+              id="select_id_year_estado"
+            >
+              <option value="1" selected>2022 - 2023</option>
+              <option value="2">2021 - 2022</option>
+              <option value="3">2020 - 2021</option>
+              <option value="4">2019 - 2020</option>
+            </select>
+          </div>
+          <div id="grafico-container-pie">
+            <canvas id="graficoEstado"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+     <div class="col-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Condiciones según su estado</h5>
+            <div id="container" style="width: 75%;">
+              <canvas id="population-chart" data-url="{% url 'population-chart' %}"></canvas>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Fin Gráficas de estudiantes-->
+
+  <!--Generador de reportes por formato-->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Generador de reportes</h5>
+          <p>
+            Seleccione las opciones que crea conveniente para formar un reporte
+            personalizado.
+          </p>
+
+          <form action="" method="post" id="frmBuscarEstudianteQuery">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-4">
+                <div class="row">
+                  <div class="col-6">
+                    <!--Filtro: Periodo-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Periodo</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <select
+                            class="form-select"
+                            name="select_year_query"
+                            id="select_year_query"
+                          >
+                            {% for anio in select_year %}
+                            <option value="{{anio}}">
+                              {{ anio }} - {{anio|add:1}}
+                            </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <!--Filtro: Nacionalidad-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Nacionalidad</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input
+                                  id="ecuatoriano"
+                                  name="ecuatoriano"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="ecuatoriano"
+                          />Ecuatoriana
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="extrangero"
+                                  name="extrangero"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value=""
+                          />Extranjera
+                        </div>
+                      </div>
+                    </div>
+                    <!--Filtro: Provincia-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Provincia</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="losrios"
+                                  name="losrios"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Los Rios"
+                          />Los Ríos
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="otrasprovincias"
+                                  name="otrasprovincias"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value=""
+                          />Otras provincias
+                        </div>
+                      </div>
+                    </div>
+                    <!--Filtro: Ciudad-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Ciudad</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="quevedo"
+                                  name="quevedo"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Quevedo"
+                          />Quevedo
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="otraciudad"
+                                  name="otraciudad"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value=""
+                          />Otras ciudades
+                        </div>
+                      </div>
+                    </div>
+                    <!--Filtro: Etnia-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Etnia</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input id="montubio"
+                                  name="montubio"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Montubio"
+                          />Montubio
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="mestizo"
+                                  name="mestizo"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Mestizo"
+                          />Mestizo
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="afroamericano"
+                                  name="afroamericano"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Afroecuatoriano"
+                          />Afroecuatoriano
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="indigena"
+                                  name="indigena"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Indigena"
+                          />Indígena
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="blanco"
+                                  name="blanco"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Blanco"
+                          />Blanco
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-6">
+                    <!--Filtro: Género-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Género</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            id="masculino"
+                            value="Masculino"
+                          />Masculino
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            id="femenino"
+                            value="Femenino"
+                          />Femenino
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            id="intersexual"
+                            value="Intersexual"
+                          />Intersexual
+                        </div>
+                      </div>
+                    </div>
+                    <!--Filtro: Discapacidad-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Discapacidad</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input id="discapacidad_no"
+                                  name="discapacidad_no"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="No"
+                          />No
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="discapacidad_si"
+                                  name="discapacidad_si"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Si"
+                          />Si
+                        </div>
+                      </div>
+                    </div>
+                    <!--Filtro: Estado civil-->
+                    <div class="pb-3">
+                      <p class="fw-bold m-0">Estado civíl</p>
+                      <div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="soltero"
+                                  name="soltero"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Soltero"
+                          />Soltero(a)
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="casado"
+                                  name="casado"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Casado"
+                          />Casado(a)
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="anulado"
+                                  name="anulado"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Anulado"
+                          />Anulado(a)
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="separado"
+                                  name="separado"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Separado"
+                          />Separado(a)
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="viudo"
+                                  name="viudo"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Viudo"
+                          />Viudo(a)
+                        </div>
+                        <div class="d-flex me-2">
+                          <input
+                                   id="unionlibre"
+                                  name="aunionlibre"
+                            class="form-check-input me-1"
+                            type="checkbox"
+                            value="Unio libre"
+                          />Unión libre
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary" id="input-query">
+                      Ver resultados
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-8">
+                <div class="row">
+                  <div class="col-12">
+                   <table class="table table-light" id="tableListaEstudiantesQuery">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">Nº</th>
+            <th scope="col">Cédula</th>
+            <th scope="col">Apellidos</th>
+            <th scope="col">Nombres</th>
+            <th scope="col">Celular</th>
+        </tr>
+    </thead>
+    <tbody id="tablebodyListaEstudiantesQuery"></tbody>
+</table>
+
+                    <nav aria-label="Page navigation example">
+                      <ul
+                        class="pagination justify-content-center"
+                        id="pagination-wrapper"
+                      >
+                        <li class="page-item">
+                          <button value="1" class="page-link">1</button>
+                        </li>
+                        <li class="page-item">
+                          <button value="2" class="page-link">2</button>
+                        </li>
+                        <li class="page-item">
+                          <button value="3" class="page-link">3</button>
+                        </li>
+                        <li class="page-item">
+                          <button value="4" class="page-link">4</button>
+                        </li>
+                        <li class="page-item">
+                          <button value="5" class="page-link">5</button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <a
+                      id="btn-descargar-xlsx"
+                      type="button"
+                      class="btn btn-primary"
+                      href="{% url 'reportes-excel-estudiante' %}"
+                      >Descargar xlsx</a
+                    >
+                    <a
+                      id="btn-descargar-csv"
+                      type="button"
+                      class="btn btn-primary"
+                      href="{% url 'reportes-csv-estudiante' %}"
+                      >Descargar csv</a
+                    >
+                    <a
+                      id="btn-descargar-pdf"
+                      type="button"
+                      class="btn btn-primary"
+                      href="{% url 'reportes-pdf-estudiante' %}"
+                      >Descargar pdf</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Fin Generador de reportes por formato-->
+</section>
+{% endblock content %} {% block js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/reportes/reporte-estudiantes.js' %}"></script>
+<script>
+  const selectAnio = document.getElementById("select_id_year");
+  const selectAnioEstado = document.getElementById("select_id_year_estado");
+  const ctx = document.getElementById("grafico").getContext("2d");
+  const ctxEstado = document.getElementById("graficoEstado").getContext("2d");
+  let graficoChart;
+  let graficoChartEstado;
+
+  ocultarSelect();
+  generarGrafico();
+  generarGraficoEstados();
+  selectAnio.addEventListener("change", function () {
+    const selectYear = selectAnio.value;
+    generarGrafico(selectYear);
+    generarGraficoEstados(selectYear);
+  });
+
+  selectAnioEstado.addEventListener("change", function () {
+    const selectYearEstado = selectAnioEstado.value;
+    generarGrafico(selectYearEstado);
+    generarGraficoEstados(selectYearEstado);
+  });
+
+  function ocultarSelect() {
+    selectAnio.style.display = "none";
+    selectAnioEstado.style.display = "none";
+  }
+
+  function generarGrafico(anio) {
+    fetch("/generar-grafico/?anio=" + (anio || ""))
+      .then((response) => response.json())
+      .then((data) => {
+        if (graficoChart) {
+          graficoChart.destroy();
+        }
+        graficoChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Cantidad de estudiantes",
+                backgroundColor: ["blue", "pink", "purple"],
+                data: data.cantidad_estudiantes,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  function generarGraficoEstados(anio) {
+    fetch("/generar-grafico-x-estado/?anio=" + (anio || ""))
+      .then((response) => response.json())
+      .then((data) => {
+        if (graficoChartEstado) {
+          graficoChartEstado.destroy();
+        }
+
+        graficoChartEstado = new Chart(ctxEstado, {
+          type: "pie",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                data: data.porcentaje,
+                backgroundColor: ["blue", "pink", "purple"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Asegúrate de tener jQuery cargado -->
+
+<script>
+
+  // Espera a que se cargue el documento
+  $(document).ready(function () {
+    // Escucha el evento de envío del formulario
+    $("#frmBuscarEstudianteQuery").on("submit", function (e) {
+      e.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+      // Crea un objeto FormData para recopilar los datos del formulario
+      var formData = new FormData(this);
+
+      // Realiza la solicitud AJAX
+      $.ajax({
+        type: "POST",
+        url: "/busqueda-personalizada/", // La URL de tu vista Django
+        data: formData,
+        dataType: "json",
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+          if (response["resultado"] == 0) {
+            console.log("NADA DE DATOS");
+          } else if (response["resultado"] == 1) {
+            mostrarDatosEnTablaQuery(response);
+          }
+        },
+        error: function (error) {
+          console.error("Error en la solicitud AJAX: ", error);
+        },
+      });
+    });
+
+    // Función para mostrar los datos en la tabla
+    function mostrarDatosEnTablaQuery(datos) {
+      var tabla = $("#tablebodyListaEstudiantesQuery");
+      tabla.empty(); // Limpia los datos anteriores en la tabla
+
+      datos["listaEstudianteQuery"].forEach(function (estudiante, index) {
+        // Crea una nueva fila en la tabla
+        var fila = $("<tr>");
+
+        // Agrega las celdas con los datos del estudiante
+        fila.append("<td>" + (index + 1) + "</td>");
+        fila.append("<td>" + estudiante.cedula + "</td>");
+        fila.append("<td>" + estudiante.apellidos + "</td>");
+        fila.append("<td>" + estudiante.nombres + "</td>");
+        fila.append("<td>" + (estudiante.celular || "Sin datos") + "</td>");
+
+        // Agrega la fila a la tabla
+        tabla.append(fila);
+      });
+      state = {
+        'querySet': tabla,
+        'page': 5,
+        'rows': 10,
+        'window': 10,
+    };
+    }
+  });
+</script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+
+    $(function () {
+
+      var $populationChart = $("#population-chart");
+      $.ajax({
+        url: $populationChart.data("url"),
+        success: function (data) {
+
+          var ctx = $populationChart[0].getContext("2d");
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: 'Population',
+                backgroundColor: 'blue',
+                data: data.data
+              }]
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Population Bar Chart'
+              }
+            }
+          });
+
+        }
+      });
+
+    });
+
+  </script>
+{% endblock js %}
+

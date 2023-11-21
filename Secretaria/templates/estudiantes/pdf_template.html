@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+    <title>Reporte de Estudiante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 45px;
+            height: 45px;
+            float: left;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .subtitle {
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+ <div class="header">
+        <img src="{{image_path}}" alt="Logo" width="45" height="45" class="logo">
+        <p class="title">UNIDAD EDUCATIVA MOCACHE</p>
+        <p class="subtitle">REPORTE DE ESTUDIANTE</p>
+        <p>Año: {{ year }} - Ciudad: {{ estudiante.ciudad.nombre }}</p>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Correo</th>
+                <th>Dirección</th>
+                <th>Celular</th>
+                <th>Provincia</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ estudiante.id }}</td>
+                <td>{{ estudiante.nombres }}</td>
+                <td>{{ estudiante.apellidos }}</td>
+                <td>{{ estudiante.correo }}</td>
+                <td>{{ estudiante.direccion }}</td>
+                <td>{{ estudiante.celular }}</td>
+                <td>{{ estudiante.provincia.nombre }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
